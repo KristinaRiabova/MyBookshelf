@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Bookshelf</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #383737;
+            padding: 20px;
+            margin: 0;
+        }
+
+        h1 {
+            color: #f6f0f0;
+        }
+
+        h2 {
+            color: #beb8b8;
+        }
+
+        form {
+            max-width: 500px;
+            margin: 0 auto;
+            background-color: #aba9a9;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="checkbox"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 30px;
+            background-color: #c0bcbc;
+        }
+
+        button {
+            background-color: #5e5e5f;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 30px;
+        }
+
+        button:hover {
+            background-color: #6e6161;
+            transition: 0.20s;
+        }
+
+        #bookshelf {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .book {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 10px;
+            margin: 10px;
+            background-color: #a5a3a3;
+            text-align: left;
+            width: 300px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .book strong {
+            font-weight: bold;
+        }
+
+        .book button {
+            background-color:#5e5e5f;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-top: 5px;
+        }
+
+        .book button:hover {
+            background-color: #3d4750;
+        }
+        .tot{
+            color: #beb8b8;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Bookshelf</h1>
+
+    <div id="bookshelf">
+    </div>
+
+    <h2>Alert the Number of Books</h2>
+    <button onclick="displayUnreadBooksCount()">Alert Unread Books Count</button>
+    <button onclick="displayFavoriteBooksCount()">Alert Favorite Books Count</button>
+
+    <h2>Total Books</h2>
+    <div class="tot" id="totalBooksCount">
+        Total Books: 0
+    </div>
+    <h2>Add a New Book</h2>
+    <form id="bookForm">
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title" required><br><br>
+
+        <label for="authors">Author(s):</label>
+        <input type="text" id="authors" name="authors" required><br><br>
+
+        <label for="numberOfPages">Number of Pages:</label>
+        <input type="number" id="numberOfPages" name="numberOfPages" required><br><br>
+
+        <label for="isRead">Read:</label>
+        <input type="checkbox" id="isRead" name="isRead"><br><br>
+
+        <label for="isFavorite">Favorite:</label>
+        <input type="checkbox" id="isFavorite" name="isFavorite"><br><br>
+
+        <button type="button" onclick="addBook()">Add Book</button>
+    </form>
+
+    <script>
+        
+        class Book {
+            constructor(title, authors, numberOfPages, isRead, isFavorite) {
+                this.title = title;
+                this.authors = authors;
+                this.numberOfPages = numberOfPages;
+                this.isRead = isRead;
+                this.isFavorite = isFavorite;
+            }
+
+            markAsRead() {
+                this.isRead = true;
+            }
+
+            toggleFavorite() {
+                this.isFavorite = !this.isFavorite;
+            }
+        }
+
+        
+        class Bookshelf {
+            constructor() {
+                this.books = [];
+            }
+
+            addBook(book) {
+                this.books.push(book);
+            }
+
+            removeBook(index) {
+                this.books.splice(index, 1);
+            }
+
+            getUnreadBooks() {
+                return this.books.filter((book) => !book.isRead);
+            }
+
+            getFavBooks() {
+                return this.books.filter((book) => book.isFavorite);
+            }
+        }
+
+        
+        const bookshelf = new Bookshelf();
+
+        
+        function addBook() {
+            
+            const title = document.getElementById("title").value;
+            const authors = document.getElementById("authors").value;
+            const numberOfPages = parseInt(document.getElementById("numberOfPages").value);
+            const isRead = document.getElementById("isRead").checked;
+            const isFavorite = document.getElementById("isFavorite").checked;
+
+            
+            const newBook = new Book(title, authors, numberOfPages, isRead, isFavorite);
+
+            
+            bookshelf.addBook(newBook);
+
+            
+            document.getElementById("title").value = "";
+            document.getElementById("authors").value = "";
+            document.getElementById("numberOfPages").value = "";
+            document.getElementById("isRead").checked = false;
+            document.getElementById("isFavorite").checked = false;
+
+            
+            displayBookshelf();
+            updateTotalBooksCount();
+        }
+
+        
+        function displayBookshelf() {
+            const bookshelfDiv = document.getElementById("bookshelf");
+            bookshelfDiv.innerHTML = "";
+
+            bookshelf.books.forEach((book, index) => {
+                const bookDiv = document.createElement("div");
+                bookDiv.className = "book";
+                bookDiv.innerHTML = `<strong>Title:</strong> ${book.title}<br>
+                                        <strong>Author(s):</strong> ${book.authors}<br>
+                                        <strong>Number of Pages:</strong> ${book.numberOfPages}<br>
+                                        <strong>Read:</strong> ${book.isRead ? "Yes" : "No"}<br>
+                                        <strong>Favorite:</strong> ${book.isFavorite ? "Yes" : "No"}<br><br>
+                                        <button onclick="removeBook(${index})">Remove</button>
+                                        <button onclick="markAsRead(${index})">Mark as Read</button>
+                                        <button onclick="toggleFavorite(${index})">Toggle Favorite</button>`;
+                bookshelfDiv.appendChild(bookDiv);
+            });
+        }
+
+        
+        function removeBook(index) {
+            bookshelf.removeBook(index);
+            displayBookshelf();
+            updateTotalBooksCount();
+        }
+
+        
+        function markAsRead(index) {
+            bookshelf.books[index].markAsRead();
+            displayBookshelf();
+        }
+
+        
+        function toggleFavorite(index) {
+            bookshelf.books[index].toggleFavorite();
+            displayBookshelf();
+        }
+
+        
+        function displayUnreadBooksCount() {
+            const unreadBooksCount = bookshelf.getUnreadBooks().length;
+            alert(`Number of Unread Books: ${unreadBooksCount}`);
+        }
+
+        
+        function displayFavoriteBooksCount() {
+            const favoriteBooksCount = bookshelf.getFavBooks().length;
+            alert(`Number of Favorite Books: ${favoriteBooksCount}`);
+        }
+
+        
+        function updateTotalBooksCount() {
+            const totalBooksCount = bookshelf.books.length;
+            const totalBooksCountDiv = document.getElementById("totalBooksCount");
+            totalBooksCountDiv.textContent = `Total Books: ${totalBooksCount}`;
+        }
+
+        
+        displayBookshelf(); 
+        updateTotalBooksCount();
+    </script>
+</body>
+
+</html>

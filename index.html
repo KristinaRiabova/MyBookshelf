@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Table Creation</title>
+</head>
+<body>
+    <table id="myTable"></table>
+
+    <script>
+        function createTableCells(rowAmount, cellsAmount) {
+            const table = document.getElementById("myTable");
+
+            for (let i = 0; i < rowAmount; i++) {
+                const row = table.insertRow(i);
+                for (let j = 0; j < cellsAmount; j++) {
+                    const cell = row.insertCell(j);
+
+                    cell.innerText = `Row ${i + 1}, Cell ${j + 1}`;
+                }
+            }
+        }
+
+        createTableCells(3, 5);
+    </script>
+</body>
+</html>
